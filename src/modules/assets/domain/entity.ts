@@ -95,7 +95,7 @@ export class Asset {
     }
     
     markAsFailed(): void {
-        if (this.status === AssetsStatus.FAILED) {
+        if (this.status === AssetStatus.FAILED) {
             throw new Error('Asset already of status FAILED')
         }
         this.status = AssetStatus.FAILED

@@ -1,98 +1,281 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# OneTake API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+*Written by AI! - Bound to be updated by a real human*
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**The Collaborative Audio Ledger** - _GitHub for Music Producers_
 
-## Description
+OneTake is a centralized platform for music producers and artists to manage the complete lifecycle of audio assets with context-aware features, version control, and collaborative workspaces.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## Table of Contents
 
-```bash
-$ npm install
+- [Overview](#overview)
+- [The Problem We're Solving](#the-problem-were-solving)
+- [User Personas](#user-personas)
+- [Core Features](#core-features)
+- [Technical Architecture](#technical-architecture)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
+- [Development Status](#development-status)
+- [API Documentation](#api-documentation)
+
+---
+
+## Overview
+
+Unlike generic cloud storage (Dropbox/Google Drive), OneTake is **context-aware**: it understands BPM, Key, and Instrument types. Unlike social platforms (SoundCloud), it focuses on the **creation process**—allowing granular version control, stem sharing, and private collaborative workspaces.
+
+OneTake bridges the gap between file storage and creative collaboration by treating audio files as first-class citizens with intelligent metadata, versioning, and attribution tracking.
+
+---
+
+## The Problem We're Solving
+
+### 1. **"WeTransfer" Fatigue**
+Producers currently share demos via expiring links or email attachments. Context is lost; files expire after 7 days.
+
+### 2. **Version Hell**
+Projects end up with filenames like `beat_v3_final_REAL_master.wav`. There is no linear history of how a track evolved.
+
+### 3. **Lost Attribution**
+When a loop or melody is shared freely, the original creator loses track of who is using it and where it ends up.
+
+---
+
+## User Personas
+
+### The Architect (Producer)
+Uploads raw loops, beats, and stems. Wants to track who downloads them and manage versions.
+
+### The Vocalist (Artist)
+Browses beats, downloads "tagged" versions to record vocals over, uploads the vocal stems back to the project.
+
+### The Engineer
+Needs access to high-fidelity `.wav` files (stems) for mixing, not just the MP3 preview.
+
+---
+
+## Core Features
+
+### A. Asset Management (The "Bank")
+
+- **Upload & Parsing**: Upload audio files (WAV/MP3) with automatic metadata extraction
+  - Duration, Size, MIME type
+  - Auto-detect BPM & Musical Key
+- **Stem Grouping**: Projects contain multiple audio files (Kick, Snare, Melody) bundled together
+- **Streaming**: Audio playable in-browser without downloading full high-quality file
+
+### B. Version Control (The "Time Machine")
+
+- **Iterative Updates**: Upload new versions of specific tracks
+- **History**: Toggle between versions (v1.0 vs v2.0) to hear differences
+- **Immutability**: Locked versions cannot be overwritten, only superseded
+
+### C. Collaboration & Social (The "Network")
+
+- **Workspaces**: Private collaborative spaces (Producer + Artist)
+- **Public/Private Toggles**: Mark beats as "Public" (Showcase) or "Private" (Vault)
+- **Timestamp Commenting**: Comment on specific waveform timestamps (e.g., "At 1:04, drop the bass")
+
+---
+
+## Technical Architecture
+
+### Non-Functional Requirements
+
+| Requirement | Target | Description |
+|-------------|--------|-------------|
+| **Availability** | High | Read operations (playback) must work even if upload service is down |
+| **Latency** | < 200ms | Audio playback must start within 200 milliseconds |
+| **Scalability** | Horizontal | Metadata (small, relational) separated from audio blobs (large, static) |
+| **Security** | Strict ACL | Private assets protected; "guessable" URLs must not grant access |
+
+### Asset Processing Pipeline
+
+```
+UPLOADED → PROCESSING → READY
+                     ↘ FAILED
 ```
 
-## Compile and run the project
+1. User uploads audio file
+2. System extracts metadata (Duration, Size, MIME)
+3. Transcoding service creates streamable version
+4. Audio analysis extracts BPM & Key
+5. Asset marked as READY for playback
+
+---
+
+## Tech Stack
+
+### Backend
+- **NestJS 11** - Progressive Node.js framework
+- **TypeScript 5.7** - Type-safe development
+- **Express.js** - HTTP server
+
+### Planned Integrations
+- **Database**: PostgreSQL / MongoDB (TBD)
+- **Object Storage**: AWS S3 / MinIO for audio files
+- **Audio Processing**: FFmpeg for transcoding
+- **Analysis**: Essentia / Librosa for BPM/Key extraction
+- **Authentication**: JWT / OAuth 2.0
+
+### Development Tools
+- Jest - Testing framework
+- ESLint & Prettier - Code quality
+- Supertest - API testing
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+ and npm/yarn
+- Git
+
+### Installation
 
 ```bash
-# development
-$ npm run start
+# Clone the repository
+git clone <repository-url>
+cd onetake-api
 
-# watch mode
-$ npm run start:dev
+# Install dependencies
+npm install
 
-# production mode
-$ npm run start:prod
+# Run in development mode
+npm run start:dev
+
+# Run tests
+npm test
+
+# Build for production
+npm run build
+npm run start:prod
 ```
 
-## Run tests
+### Available Scripts
 
-```bash
-# unit tests
-$ npm run test
+| Script | Description |
+|--------|-------------|
+| `npm run start` | Start the application |
+| `npm run start:dev` | Start with hot-reload (watch mode) |
+| `npm run start:debug` | Start with debugger attached |
+| `npm run start:prod` | Run production build |
+| `npm run build` | Compile TypeScript to JavaScript |
+| `npm test` | Run unit tests |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:cov` | Generate test coverage report |
+| `npm run test:e2e` | Run end-to-end tests |
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
+## Project Structure
+
+```
+onetake-api/
+├── src/
+│   ├── main.ts                      # Application entry point
+│   ├── app.module.ts                # Root module
+│   └── modules/
+│       ├── assets/                  # Audio file & asset management
+│       │   ├── domain/              # Business logic & entities
+│       │   ├── application/         # Use cases & services
+│       │   ├── infrastructure/      # Database repositories
+│       │   └── presentation/        # Controllers & DTOs
+│       ├── collaboration/           # Workspaces & sharing
+│       └── versioning/              # Version control system
+├── test/                            # E2E tests
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
-## Deployment
+### Architecture Pattern
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+The project follows **Clean Architecture** principles:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- **Domain Layer**: Core business entities and rules (e.g., `Asset` entity)
+- **Application Layer**: Use cases and business workflows
+- **Infrastructure Layer**: External services (database, file storage, APIs)
+- **Presentation Layer**: HTTP controllers, DTOs, and request/response handling
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+---
+
+## Development Status
+
+### Current Implementation (v0.1.0-alpha)
+
+- [x] NestJS project scaffolding
+- [x] Domain model for Asset entity
+- [x] Module structure (assets, collaboration, versioning)
+- [x] Development tooling (testing, linting, formatting)
+
+### In Progress
+
+- [ ] Database integration (ORM setup)
+- [ ] Asset upload endpoints
+- [ ] File storage service
+- [ ] Audio transcoding pipeline
+- [ ] BPM/Key extraction
+
+### Planned Features
+
+- [ ] Authentication & authorization
+- [ ] User management
+- [ ] Workspace collaboration
+- [ ] Version control system
+- [ ] Waveform visualization
+- [ ] Timestamp commenting
+- [ ] Public/private asset toggles
+- [ ] Download tracking & analytics
+
+---
+
+## API Documentation
+
+### Asset Entity
+
+```typescript
+{
+  id: string                    // UUID v4
+  originalFileName: string      // Original uploaded filename
+  mimeType: string             // File MIME type (audio/wav, audio/mpeg)
+  size: number                 // File size in bytes
+  duration: number             // Duration in seconds
+  filePath: string             // Path to original file
+  transcodedFilePath?: string  // Path to transcoded stream-optimized file
+  ownerId: string              // User who owns the asset
+  createdAt: Date              // Upload timestamp
+  updatedAt: Date              // Last modification timestamp
+  status: AssetStatus          // Processing state
+  bpm?: number                 // Beats per minute (auto-detected)
+  key?: string                 // Musical key (auto-detected)
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Asset Status Enum
 
-## Resources
+- `UPLOADED` - File received but not processed
+- `PROCESSING` - Currently being transcoded/analyzed
+- `READY` - Fully processed and ready for playback
+- `FAILED` - Processing encountered an error
 
-Check out a few resources that may come in handy when working with NestJS:
+---
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Contributing
 
-## Support
+This project is in active development. Contribution guidelines will be published once the core features are stabilized.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+[License TBD]
+
+---
+
+## Contact
+
+For questions or collaboration inquiries, please open an issue or contact the development team.
