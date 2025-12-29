@@ -9,12 +9,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const module_1 = require("./modules/assets/module");
+const event_emitter_1 = require("@nestjs/event-emitter");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [module_1.AssetsModule],
+        imports: [
+            module_1.AssetsModule,
+            event_emitter_1.EventEmitterModule.forRoot(),
+        ],
         controllers: [],
         providers: [],
     })

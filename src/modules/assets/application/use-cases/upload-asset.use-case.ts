@@ -1,0 +1,62 @@
+import { Injectable } from '@nestjs/common';
+import { Asset } from '../../domain/entity';
+import type { IAssetRepository } from '../interfaces/asset-repository.interface';
+import type { IFileStorageService } from '../interfaces/file-storage.interface';
+import type { IAudioProcessingInterface } from '../interfaces/audio-processing.interface';
+
+export interface UploadAssetCommand {
+    ownerId: string;
+    file: {
+        buffer: Buffer;
+        originalName: string;
+        mimeType: string;
+        size: number;
+    };
+}
+
+@Injectable()
+export class UploadAssetUseCase {
+    constructor(
+        private readonly assetRepository: IAssetRepository,
+        private readonly fileStorageService: IFileStorageService,
+        private readonly audioProcessingService: IAudioProcessingInterface,
+    ) {}
+
+    async execute(command: UploadAssetCommand): Promise<Asset> {
+        
+        const asset = Asset.create(
+            command.file.originalName, 
+            command.file.mimeType, 
+            command.file.size,
+            0,
+            "",
+            command.ownerId,
+        )
+        
+        let filePath: string;
+        try {
+            filePath = await this.fileStorageService.save(command.file);
+        } catch (error) {
+            asset.markAsFailed();
+            throw new Error(`Internal server error: ${error.message}`);
+        }
+        
+        let fileDuration: number;
+        try {
+            fileDuration = await this.audioProcessingService.getDuration(filePath);
+        } catch (error) {
+            await this.fileStorageService.delete(filePath);
+            asset.markAsFailed();
+            throw new Error(`Failed to analyze audio: ${error.message}`);
+        }
+
+        asset.filePath = filePath;
+        asset.duration = fileDuration;
+
+        asset.markAsProcessing()
+        await this.assetRepository.save(asset);
+        
+        return asset;
+    }
+}
+    

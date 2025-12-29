@@ -11,7 +11,7 @@ export declare class AssetDto {
     key?: string;
     createdAt: Date;
     updatedAt: Date;
-    ownderId: string;
+    ownerId: string;
     streamUrl?: string;
     static fromEntity(asset: Asset, streamURL?: string): AssetDto;
     static fromEntityWithUrl(asset: Asset, fileStorageService: IFileStorageService): AssetDto;

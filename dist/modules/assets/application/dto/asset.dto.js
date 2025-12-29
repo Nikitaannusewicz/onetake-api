@@ -24,7 +24,7 @@ class AssetDto {
     key;
     createdAt;
     updatedAt;
-    ownderId;
+    ownerId;
     streamUrl;
     static fromEntity(asset, streamURL) {
         const dto = new AssetDto();
@@ -38,14 +38,14 @@ class AssetDto {
         dto.key = asset.key;
         dto.createdAt = asset.createdAt;
         dto.updatedAt = asset.updatedAt;
-        dto.ownderId = asset.ownerId;
+        dto.ownerId = asset.ownerId;
         dto.streamUrl = streamURL;
         return dto;
     }
     static fromEntityWithUrl(asset, fileStorageService) {
         let streamUrl;
         if (asset.status == entity_1.AssetStatus.READY && asset.transcodedFilePath) {
-            streamUrl = asset.IFileStorageService.getUrl(asset.transcodedFilePath);
+            streamUrl = fileStorageService.getUrl(asset.transcodedFilePath);
         }
         return AssetDto.fromEntity(asset, streamUrl);
     }
@@ -81,26 +81,26 @@ __decorate([
 ], ListAssetsDto.prototype, "ownerId", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    IsNumber(),
+    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], ListAssetsDto.prototype, "minBpm", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    IsNumber(),
-    (0, class_transformer_1.Type)((() => Number)),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], ListAssetsDto.prototype, "maxBpm", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    IsNumber(),
+    (0, class_validator_1.IsNumber)(),
     (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], ListAssetsDto.prototype, "page", void 0);
 __decorate([
-    class_validator_1.IsOptional,
-    IsNumber(),
-    (0, class_transformer_1.Type)((() => Number)),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], ListAssetsDto.prototype, "limit", void 0);
 //# sourceMappingURL=asset.dto.js.map

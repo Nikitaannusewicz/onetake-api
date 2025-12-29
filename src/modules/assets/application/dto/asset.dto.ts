@@ -1,7 +1,7 @@
 import { Asset, AssetStatus } from '../../domain/entity';
 import { IFileStorageService } from '../interfaces/file-storage.interface';
 import { Type } from 'class-transformer';
-import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsEnum, IsNumber } from 'class-validator';
 
 export class AssetDto {
     id: string;
@@ -14,7 +14,7 @@ export class AssetDto {
     key?: string;
     createdAt: Date;
     updatedAt: Date;
-    ownderId: string;
+    ownerId: string;
     streamUrl?: string
     
     static fromEntity(asset: Asset, streamURL?: string): AssetDto {
@@ -29,7 +29,7 @@ export class AssetDto {
         dto.key = asset.key;
         dto.createdAt = asset.createdAt;
         dto.updatedAt = asset.updatedAt;
-        dto.ownderId = asset.ownerId;
+        dto.ownerId = asset.ownerId;
         dto.streamUrl = streamURL;
         return dto;
     }
@@ -40,7 +40,7 @@ export class AssetDto {
     ): AssetDto {
         let streamUrl: string | undefined;
         if (asset.status == AssetStatus.READY && asset.transcodedFilePath) {
-            streamUrl = asset.IFileStorageService.getUrl(asset.transcodedFilePath);
+            streamUrl = fileStorageService.getUrl(asset.transcodedFilePath);
         }
         return AssetDto.fromEntity(asset, streamUrl);
     }
@@ -68,7 +68,7 @@ export class ListAssetsDto {
 
     @IsOptional()
     @IsNumber()
-    @Type(( => Number))
+    @Type(() => Number)
     maxBpm?: number;
     
     @IsOptional()
@@ -76,9 +76,9 @@ export class ListAssetsDto {
     @Type(() => Number)
     page?: number = 1;
 
-    @IsOptional
+    @IsOptional()
     @IsNumber()
-    @Type(( => Number))
+    @Type(() => Number)
     limit?: number = 20;
 }
 

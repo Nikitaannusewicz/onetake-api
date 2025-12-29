@@ -17,5 +17,4 @@ export interface IAudioProcessingInterface {
     analyze(filePath: string): Promise<AudioAnalysisResult>;
     getDuration(filePath: string): Promise<number>;
     generateWaveform(inputPath: string, outputPath: string, width?: number, height?: number): Promise<string>;
-    
 }
