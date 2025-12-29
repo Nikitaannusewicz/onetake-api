@@ -27,14 +27,14 @@ let ProcessAssetUseCase = class ProcessAssetUseCase {
         }
         try {
             const inputPath = asset.filePath;
-            const outputPath = `transcoded/${asset.ownerId}/${asset.id}.mp3`;
             const fileExtension = inputPath.split('.').pop()?.toLowerCase();
             if (fileExtension === "mp3") {
                 const analysisResult = await this.audioProcessingService.analyze(inputPath);
-                asset.markAsReady(outputPath, analysisResult.bpm, analysisResult.key);
+                asset.markAsReady(inputPath, analysisResult.bpm, analysisResult.key);
                 await this.assetRepository.save(asset);
                 return;
             }
+            const outputPath = `transcoded/${asset.ownerId}/${asset.id}.mp3`;
             const transcodeOptions = {
                 targetFormat: "mp3",
                 bitrate: 128000,
@@ -48,7 +48,7 @@ let ProcessAssetUseCase = class ProcessAssetUseCase {
         catch (error) {
             asset.markAsFailed();
             await this.assetRepository.save(asset);
-            throw new Error(`Failed to process asset: ${error.message}`);
+            console.error(`Failed to process assets ${assetId}`, error);
         }
     }
 };

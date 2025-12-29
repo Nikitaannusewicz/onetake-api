@@ -12,14 +12,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UploadAssetUseCase = void 0;
 const common_1 = require("@nestjs/common");
 const entity_1 = require("../../domain/entity");
+const asset_uploaded_event_1 = require("../events/asset-uploaded.event");
 let UploadAssetUseCase = class UploadAssetUseCase {
     assetRepository;
     fileStorageService;
     audioProcessingService;
-    constructor(assetRepository, fileStorageService, audioProcessingService) {
+    eventEmitter;
+    constructor(assetRepository, fileStorageService, audioProcessingService, eventEmitter) {
         this.assetRepository = assetRepository;
         this.fileStorageService = fileStorageService;
         this.audioProcessingService = audioProcessingService;
+        this.eventEmitter = eventEmitter;
     }
     async execute(command) {
         const asset = entity_1.Asset.create(command.file.originalName, command.file.mimeType, command.file.size, 0, "", command.ownerId);
@@ -44,12 +47,13 @@ let UploadAssetUseCase = class UploadAssetUseCase {
         asset.duration = fileDuration;
         asset.markAsProcessing();
         await this.assetRepository.save(asset);
+        this.eventEmitter.emit('asset.uploaded', new asset_uploaded_event_1.AssetUploadedEvent(asset.id, asset.filePath, asset.ownerId));
         return asset;
     }
 };
 exports.UploadAssetUseCase = UploadAssetUseCase;
 exports.UploadAssetUseCase = UploadAssetUseCase = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Function])
 ], UploadAssetUseCase);
 //# sourceMappingURL=upload-asset.use-case.js.map
