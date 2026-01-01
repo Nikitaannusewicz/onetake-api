@@ -1,6 +1,5 @@
 import { Injectable, Options } from "@nestjs/common";
 import { IAudioProcessingInterface, AudioAnalysisResult, TranscodeOptions } from "../../application/interfaces/audio-processing.interface";
-import { fileURLToPath } from "url";
 
 @Injectable()
 export class MockAudioProcessing implements IAudioProcessingInterface {
@@ -30,7 +29,7 @@ export class MockAudioProcessing implements IAudioProcessingInterface {
             sampleRate: 44100,
             bitrate: 128,
         } as AudioAnalysisResult;
-    };
+    }
     
     async getDuration(filePath: string): Promise<number> {
         console.log(`Analyzing duration of: ${filePath}`);
@@ -44,17 +43,12 @@ export class MockAudioProcessing implements IAudioProcessingInterface {
         return "Waveform";
     }
     
-    private delay(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-    
     private getRandomKey(): string {
         const keys = ["A", 'A#', "B", "C", "C#"];
         const modes = ["min", "maj"];
         
-        const randomKey = `${[Math.floor(Math.random() * keys.length)]} ${modes[Math.floor(Math.random() * modes.length)]}`;
+        const randomKey = `${keys[Math.floor(Math.random() * keys.length)]} ${modes[Math.floor(Math.random() * modes.length)]}`;
 
-        return `${[Math.floor(Math.random() * keys.length)]} ${modes[Math.floor(Math.random() * modes.length)]}`;
-
+        return randomKey;
     }
 }

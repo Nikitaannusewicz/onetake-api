@@ -8,11 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UploadAssetUseCase = void 0;
 const common_1 = require("@nestjs/common");
 const entity_1 = require("../../domain/entity");
 const asset_uploaded_event_1 = require("../events/asset-uploaded.event");
+const common_2 = require("@nestjs/common");
 let UploadAssetUseCase = class UploadAssetUseCase {
     assetRepository;
     fileStorageService;
@@ -54,6 +58,9 @@ let UploadAssetUseCase = class UploadAssetUseCase {
 exports.UploadAssetUseCase = UploadAssetUseCase;
 exports.UploadAssetUseCase = UploadAssetUseCase = __decorate([
     (0, common_1.Injectable)(),
+    __param(0, (0, common_2.Inject)('IAssetRepository')),
+    __param(1, (0, common_2.Inject)('IFileStorageService')),
+    __param(2, (0, common_2.Inject)('IAudioProcessingInterface')),
     __metadata("design:paramtypes", [Object, Object, Object, Function])
 ], UploadAssetUseCase);
 //# sourceMappingURL=upload-asset.use-case.js.map

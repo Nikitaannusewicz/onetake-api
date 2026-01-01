@@ -5,6 +5,7 @@ import type { IFileStorageService } from '../interfaces/file-storage.interface';
 import type { IAudioProcessingInterface } from '../interfaces/audio-processing.interface';
 import type { EventEmitter2 } from '@nestjs/event-emitter';
 import { AssetUploadedEvent } from '../events/asset-uploaded.event';
+import { Inject } from '@nestjs/common';
 
 export interface UploadAssetCommand {
     ownerId: string;
@@ -19,8 +20,11 @@ export interface UploadAssetCommand {
 @Injectable()
 export class UploadAssetUseCase {
     constructor(
+        @Inject('IAssetRepository')
         private readonly assetRepository: IAssetRepository,
+        @Inject('IFileStorageService')
         private readonly fileStorageService: IFileStorageService,
+        @Inject('IAudioProcessingInterface')
         private readonly audioProcessingService: IAudioProcessingInterface,
         private readonly eventEmitter: EventEmitter2,
     ) {}

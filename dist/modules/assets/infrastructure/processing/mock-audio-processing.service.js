@@ -24,7 +24,6 @@ let MockAudioProcessing = class MockAudioProcessing {
             bitrate: 128,
         };
     }
-    ;
     async getDuration(filePath) {
         console.log(`Analyzing duration of: ${filePath}`);
         return 10;
@@ -33,14 +32,11 @@ let MockAudioProcessing = class MockAudioProcessing {
         console.log(`Generating Waveform for: ${inputPath}`);
         return "Waveform";
     }
-    delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
     getRandomKey() {
         const keys = ["A", 'A#', "B", "C", "C#"];
         const modes = ["min", "maj"];
-        const randomKey = `${[Math.floor(Math.random() * keys.length)]} ${modes[Math.floor(Math.random() * modes.length)]}`;
-        return `${[Math.floor(Math.random() * keys.length)]} ${modes[Math.floor(Math.random() * modes.length)]}`;
+        const randomKey = `${keys[Math.floor(Math.random() * keys.length)]} ${modes[Math.floor(Math.random() * modes.length)]}`;
+        return randomKey;
     }
 };
 exports.MockAudioProcessing = MockAudioProcessing;

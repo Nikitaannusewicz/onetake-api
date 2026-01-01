@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import type { IAssetRepository } from "../interfaces/asset-repository.interface";
 import type { IAudioProcessingInterface, TranscodeOptions } from "../interfaces/audio-processing.interface";
 import type { IFileStorageService } from "../interfaces/file-storage.interface";
@@ -6,8 +6,11 @@ import type { IFileStorageService } from "../interfaces/file-storage.interface";
 @Injectable()
 export class ProcessAssetUseCase {
     constructor(
+        @Inject('IAssetRepository')
         private readonly assetRepository: IAssetRepository,
+        @Inject('IAudioProcessingInterface')
         private readonly audioProcessingService: IAudioProcessingInterface,
+        @Inject('IFileStorageService')
         private readonly storageService: IFileStorageService,
     ) {}
     
@@ -54,7 +57,7 @@ export class ProcessAssetUseCase {
         } catch (error) {
             asset.markAsFailed()
             await this.assetRepository.save(asset);
-            console.error(`Failed to process assets ${assetId}`, error);       
+            console.error(`Failed to process asset ${assetId}`, error);       
         }
     }
 }

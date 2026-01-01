@@ -1,6 +1,6 @@
 export declare class AssetUploadedEvent {
     readonly assetId: string;
-    private readonly filePath;
-    private readonly ownerId;
+    readonly filePath: string;
+    readonly ownerId: string;
     constructor(assetId: string, filePath: string, ownerId: string);
 }

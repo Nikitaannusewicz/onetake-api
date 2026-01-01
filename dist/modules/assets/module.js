@@ -8,6 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsModule = void 0;
 const common_1 = require("@nestjs/common");
+const upload_asset_use_case_1 = require("./application/use-cases/upload-asset.use-case");
+const process_asset_use_case_1 = require("./application/use-cases/process-asset.use-case");
+const asset_uploaded_listener_1 = require("./application/listeners/asset-uploaded.listener");
+const in_memory_asset_repository_1 = require("./infrastructure/repositories/in-memory-asset-repository");
+const mock_audio_processing_service_1 = require("./infrastructure/processing/mock-audio-processing.service");
+const mock_file_storage_service_1 = require("./infrastructure/storage/mock-file-storage.service");
 let AssetsModule = class AssetsModule {
 };
 exports.AssetsModule = AssetsModule;
@@ -15,7 +21,23 @@ exports.AssetsModule = AssetsModule = __decorate([
     (0, common_1.Module)({
         imports: [],
         controllers: [],
-        providers: [],
+        providers: [
+            upload_asset_use_case_1.UploadAssetUseCase,
+            process_asset_use_case_1.ProcessAssetUseCase,
+            asset_uploaded_listener_1.AssetUploadedListener,
+            {
+                provide: 'IAssetRepository',
+                useClass: in_memory_asset_repository_1.InMemoryAssetRepository,
+            },
+            {
+                provide: 'IAudioProcessingInterface',
+                useClass: mock_audio_processing_service_1.MockAudioProcessing,
+            },
+            {
+                provide: 'IFileStorageService',
+                useClass: mock_file_storage_service_1.MockFileStorageService,
+            },
+        ],
     })
 ], AssetsModule);
 //# sourceMappingURL=module.js.map
