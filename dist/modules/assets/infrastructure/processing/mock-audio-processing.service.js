@@ -6,9 +6,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MockAudioProcessing = void 0;
+exports.MockAudioProcessingService = void 0;
 const common_1 = require("@nestjs/common");
-let MockAudioProcessing = class MockAudioProcessing {
+let MockAudioProcessingService = class MockAudioProcessingService {
     async transcode(inputPath, outputPath, options) {
         console.log(`[Audio] Transcoding ${inputPath} -> ${outputPath}`);
         console.log(`Format: ${options.targetFormat} | Bitrate: ${options.bitrate}`);
@@ -39,8 +39,8 @@ let MockAudioProcessing = class MockAudioProcessing {
         return randomKey;
     }
 };
-exports.MockAudioProcessing = MockAudioProcessing;
-exports.MockAudioProcessing = MockAudioProcessing = __decorate([
+exports.MockAudioProcessingService = MockAudioProcessingService;
+exports.MockAudioProcessingService = MockAudioProcessingService = __decorate([
     (0, common_1.Injectable)()
-], MockAudioProcessing);
+], MockAudioProcessingService);
 //# sourceMappingURL=mock-audio-processing.service.js.map

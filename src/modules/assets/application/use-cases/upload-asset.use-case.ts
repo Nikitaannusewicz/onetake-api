@@ -3,7 +3,7 @@ import { Asset } from '../../domain/entity';
 import type { IAssetRepository } from '../interfaces/asset-repository.interface';
 import type { IFileStorageService } from '../interfaces/file-storage.interface';
 import type { IAudioProcessingInterface } from '../interfaces/audio-processing.interface';
-import type { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AssetUploadedEvent } from '../events/asset-uploaded.event';
 import { Inject } from '@nestjs/common';
 

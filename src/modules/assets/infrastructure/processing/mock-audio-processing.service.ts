@@ -1,8 +1,8 @@
-import { Injectable, Options } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { IAudioProcessingInterface, AudioAnalysisResult, TranscodeOptions } from "../../application/interfaces/audio-processing.interface";
 
 @Injectable()
-export class MockAudioProcessing implements IAudioProcessingInterface {
+export class MockAudioProcessingService implements IAudioProcessingInterface {
 
     async transcode(
         inputPath: string,

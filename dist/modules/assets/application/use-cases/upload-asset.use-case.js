@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UploadAssetUseCase = void 0;
 const common_1 = require("@nestjs/common");
 const entity_1 = require("../../domain/entity");
+const event_emitter_1 = require("@nestjs/event-emitter");
 const asset_uploaded_event_1 = require("../events/asset-uploaded.event");
 const common_2 = require("@nestjs/common");
 let UploadAssetUseCase = class UploadAssetUseCase {
@@ -61,6 +62,6 @@ exports.UploadAssetUseCase = UploadAssetUseCase = __decorate([
     __param(0, (0, common_2.Inject)('IAssetRepository')),
     __param(1, (0, common_2.Inject)('IFileStorageService')),
     __param(2, (0, common_2.Inject)('IAudioProcessingInterface')),
-    __metadata("design:paramtypes", [Object, Object, Object, Function])
+    __metadata("design:paramtypes", [Object, Object, Object, event_emitter_1.EventEmitter2])
 ], UploadAssetUseCase);
 //# sourceMappingURL=upload-asset.use-case.js.map
