@@ -14,11 +14,38 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssetsController = void 0;
 const common_1 = require("@nestjs/common");
+const common_2 = require("@nestjs/common");
 const upload_asset_use_case_1 = require("../../application/use-cases/upload-asset.use-case");
+const platform_express_1 = require("@nestjs/platform-express");
+const asset_dto_1 = require("../../application/dto/asset.dto");
 let AssetsController = class AssetsController {
     uploadAssetUseCase;
     constructor(uploadAssetUseCase) {
         this.uploadAssetUseCase = uploadAssetUseCase;
+    }
+    async upload(file, dto) {
+        const asset = await this.uploadAssetUseCase.execute({
+            ownerId: dto.ownerId,
+            file: {
+                buffer: file.buffer,
+                originalName: file.originalname,
+                mimeType: file.mimetype,
+                size: file.size,
+            },
+        });
+        return {
+            id: asset.id,
+            originalFileName: asset.originalFileName,
+            mimeType: asset.mimeType,
+            size: asset.size,
+            duration: asset.duration,
+            status: asset.status,
+            bpm: asset.bpm,
+            key: asset.key,
+            createdAt: asset.createdAt,
+            updatedAt: asset.updatedAt,
+            ownerId: asset.ownerId,
+        };
     }
     async testUpload(body) {
         const mockFile = {
@@ -47,6 +74,20 @@ let AssetsController = class AssetsController {
     }
 };
 exports.AssetsController = AssetsController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.UploadedFile)(new common_1.ParseFilePipe({
+        validators: [
+            new common_1.MaxFileSizeValidator({ maxSize: 50 * 1024 * 1024 }),
+            new common_2.FileTypeValidator({ fileType: /audio\/(mpeg|wav)/ }),
+        ]
+    }))),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, asset_dto_1.UploadAssetDto]),
+    __metadata("design:returntype", Promise)
+], AssetsController.prototype, "upload", null);
 __decorate([
     (0, common_1.Post)('test'),
     __param(0, (0, common_1.Body)()),
