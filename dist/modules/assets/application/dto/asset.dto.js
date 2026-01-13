@@ -66,7 +66,7 @@ class ListAssetsDto {
     minBpm;
     maxBpm;
     page = 1;
-    limit = 20;
+    limit = 10;
 }
 exports.ListAssetsDto = ListAssetsDto;
 __decorate([

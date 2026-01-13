@@ -7,11 +7,17 @@ import { InMemoryAssetRepository } from "./infrastructure/repositories/in-memory
 import { MockAudioProcessingService } from "./infrastructure/processing/mock-audio-processing.service";
 import { MockFileStorageService } from "./infrastructure/storage/mock-file-storage.service";
 import { AssetsController } from "./presentation/controllers/assets.controller";
+import { ListAssetsUseCase } from "./application/use-cases/list-assets.use-case";
+import { GetAssetByIdUseCase } from "./application/use-cases/get-asset-by-id.use-case";
+import { DeleteAssetUseCase } from "./application/use-cases/delete-asset.use-case";
 
 @Module({
     imports: [EventEmitterModule.forRoot()],
     controllers: [AssetsController],
     providers: [
+        ListAssetsUseCase,
+        DeleteAssetUseCase,
+        GetAssetByIdUseCase,
         UploadAssetUseCase,
         ProcessAssetUseCase,
         AssetUploadedListener,

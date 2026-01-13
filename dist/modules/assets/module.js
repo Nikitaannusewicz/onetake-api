@@ -16,6 +16,9 @@ const in_memory_asset_repository_1 = require("./infrastructure/repositories/in-m
 const mock_audio_processing_service_1 = require("./infrastructure/processing/mock-audio-processing.service");
 const mock_file_storage_service_1 = require("./infrastructure/storage/mock-file-storage.service");
 const assets_controller_1 = require("./presentation/controllers/assets.controller");
+const list_assets_use_case_1 = require("./application/use-cases/list-assets.use-case");
+const get_asset_by_id_use_case_1 = require("./application/use-cases/get-asset-by-id.use-case");
+const delete_asset_use_case_1 = require("./application/use-cases/delete-asset.use-case");
 let AssetsModule = class AssetsModule {
 };
 exports.AssetsModule = AssetsModule;
@@ -24,6 +27,9 @@ exports.AssetsModule = AssetsModule = __decorate([
         imports: [event_emitter_1.EventEmitterModule.forRoot()],
         controllers: [assets_controller_1.AssetsController],
         providers: [
+            list_assets_use_case_1.ListAssetsUseCase,
+            delete_asset_use_case_1.DeleteAssetUseCase,
+            get_asset_by_id_use_case_1.GetAssetByIdUseCase,
             upload_asset_use_case_1.UploadAssetUseCase,
             process_asset_use_case_1.ProcessAssetUseCase,
             asset_uploaded_listener_1.AssetUploadedListener,

@@ -1,13 +1,44 @@
-import { Post, Body, Controller, UseInterceptors, MaxFileSizeValidator, ParseFilePipe, UploadedFile} from "@nestjs/common";
+import { Post, Query, Body, Param, Delete, Controller, UseInterceptors, MaxFileSizeValidator, ParseFilePipe, UploadedFile, Get, HttpCode} from "@nestjs/common";
 import { FileTypeValidator } from "@nestjs/common";
 import { UploadAssetUseCase } from "../../application/use-cases/upload-asset.use-case";
-import { AssetDto } from "../../application/dto/asset.dto";
+import { AssetDto, ListAssetsDto } from "../../application/dto/asset.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { UploadAssetDto } from "../../application/dto/asset.dto";
+import { ListAssetsUseCase } from "../../application/use-cases/list-assets.use-case";
+import { PaginatedResponse } from "src/common/pipes/types/paginated-response.type";
+import { GetAssetByIdUseCase } from "../../application/use-cases/get-asset-by-id.use-case";
+import { DeleteAssetUseCase } from "../../application/use-cases/delete-asset.use-case";
+import { HttpStatus } from "@nestjs/common";
 
 @Controller('assets')
 export class AssetsController {
-    constructor(private readonly uploadAssetUseCase: UploadAssetUseCase) {}
+    constructor(
+        private readonly uploadAssetUseCase: UploadAssetUseCase,
+        private readonly deleteAssetUseCase: DeleteAssetUseCase,
+        private readonly listAssetUseCase: ListAssetsUseCase,
+        private readonly getAssetByIdUseCase: GetAssetByIdUseCase,
+    ) {}
+    
+    @Get()
+    async list(
+        @Query() query: ListAssetsDto,
+    ): Promise<PaginatedResponse<AssetDto>> {
+        const result = await this.listAssetUseCase.execute(query);
+        const dtoData = result.data.map(asset => AssetDto.fromEntity(asset));
+        
+        return {
+            data: dtoData,
+            meta: result.meta,
+        };        
+    }
+    
+    @Get(':id')
+    async getAsset(@Param('id') id: string): Promise<AssetDto> {
+        const result = await this.getAssetByIdUseCase.execute(id);
+        const assetDto = AssetDto.fromEntity(result);
+
+        return assetDto;        
+    }
     
     @Post()
     @UseInterceptors(FileInterceptor('file'))
@@ -47,34 +78,10 @@ export class AssetsController {
             ownerId: asset.ownerId,
         };
     }
-    
-    @Post('test')
-    async testUpload(@Body() body: { ownerId: string }): Promise<AssetDto> {
 
-        const mockFile = {
-            buffer: Buffer.from('fake audio data'),
-            originalName: 'test-song.wav',
-            mimeType: 'audio/wav',
-            size: 68,
-        };
-
-        const asset = await this.uploadAssetUseCase.execute({
-            ownerId: body.ownerId,
-            file: mockFile,
-        });
-
-        return {
-            id: asset.id,
-            originalFileName: asset.originalFileName,
-            mimeType: asset.mimeType,
-            size: asset.size,
-            duration: asset.duration,
-            ownerId: asset.ownerId,
-            createdAt: asset.createdAt,
-            updatedAt: asset.updatedAt,
-            status: asset.status,
-            bpm: asset.bpm,
-            key: asset.key, 
-        }
+    @Delete(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deleteAsset(@Param('id') id: string): Promise<void> {
+        this.deleteAssetUseCase.execute(id);
     }
-}
+}   

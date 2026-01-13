@@ -16,12 +16,35 @@ exports.AssetsController = void 0;
 const common_1 = require("@nestjs/common");
 const common_2 = require("@nestjs/common");
 const upload_asset_use_case_1 = require("../../application/use-cases/upload-asset.use-case");
-const platform_express_1 = require("@nestjs/platform-express");
 const asset_dto_1 = require("../../application/dto/asset.dto");
+const platform_express_1 = require("@nestjs/platform-express");
+const asset_dto_2 = require("../../application/dto/asset.dto");
+const list_assets_use_case_1 = require("../../application/use-cases/list-assets.use-case");
+const get_asset_by_id_use_case_1 = require("../../application/use-cases/get-asset-by-id.use-case");
+const delete_asset_use_case_1 = require("../../application/use-cases/delete-asset.use-case");
 let AssetsController = class AssetsController {
     uploadAssetUseCase;
-    constructor(uploadAssetUseCase) {
+    deleteAssetUseCase;
+    listAssetUseCase;
+    getAssetByIdUseCase;
+    constructor(uploadAssetUseCase, deleteAssetUseCase, listAssetUseCase, getAssetByIdUseCase) {
         this.uploadAssetUseCase = uploadAssetUseCase;
+        this.deleteAssetUseCase = deleteAssetUseCase;
+        this.listAssetUseCase = listAssetUseCase;
+        this.getAssetByIdUseCase = getAssetByIdUseCase;
+    }
+    async list(query) {
+        const result = await this.listAssetUseCase.execute(query);
+        const dtoData = result.data.map(asset => asset_dto_1.AssetDto.fromEntity(asset));
+        return {
+            data: dtoData,
+            meta: result.meta,
+        };
+    }
+    async getAsset(id) {
+        const result = await this.getAssetByIdUseCase.execute(id);
+        const assetDto = asset_dto_1.AssetDto.fromEntity(result);
+        return assetDto;
     }
     async upload(file, dto) {
         const asset = await this.uploadAssetUseCase.execute({
@@ -47,33 +70,25 @@ let AssetsController = class AssetsController {
             ownerId: asset.ownerId,
         };
     }
-    async testUpload(body) {
-        const mockFile = {
-            buffer: Buffer.from('fake audio data'),
-            originalName: 'test-song.wav',
-            mimeType: 'audio/wav',
-            size: 68,
-        };
-        const asset = await this.uploadAssetUseCase.execute({
-            ownerId: body.ownerId,
-            file: mockFile,
-        });
-        return {
-            id: asset.id,
-            originalFileName: asset.originalFileName,
-            mimeType: asset.mimeType,
-            size: asset.size,
-            duration: asset.duration,
-            ownerId: asset.ownerId,
-            createdAt: asset.createdAt,
-            updatedAt: asset.updatedAt,
-            status: asset.status,
-            bpm: asset.bpm,
-            key: asset.key,
-        };
+    async deleteAsset(id) {
+        this.deleteAssetUseCase.execute(id);
     }
 };
 exports.AssetsController = AssetsController;
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [asset_dto_1.ListAssetsDto]),
+    __metadata("design:returntype", Promise)
+], AssetsController.prototype, "list", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Query)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AssetsController.prototype, "getAsset", null);
 __decorate([
     (0, common_1.Post)(),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
@@ -85,18 +100,21 @@ __decorate([
     }))),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, asset_dto_1.UploadAssetDto]),
+    __metadata("design:paramtypes", [Object, asset_dto_2.UploadAssetDto]),
     __metadata("design:returntype", Promise)
 ], AssetsController.prototype, "upload", null);
 __decorate([
-    (0, common_1.Post)('test'),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], AssetsController.prototype, "testUpload", null);
+], AssetsController.prototype, "deleteAsset", null);
 exports.AssetsController = AssetsController = __decorate([
     (0, common_1.Controller)('assets'),
-    __metadata("design:paramtypes", [upload_asset_use_case_1.UploadAssetUseCase])
+    __metadata("design:paramtypes", [upload_asset_use_case_1.UploadAssetUseCase,
+        delete_asset_use_case_1.DeleteAssetUseCase,
+        list_assets_use_case_1.ListAssetsUseCase,
+        get_asset_by_id_use_case_1.GetAssetByIdUseCase])
 ], AssetsController);
 //# sourceMappingURL=assets.controller.js.map
