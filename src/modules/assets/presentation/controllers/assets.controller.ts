@@ -82,6 +82,6 @@ export class AssetsController {
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     async deleteAsset(@Param('id') id: string): Promise<void> {
-        this.deleteAssetUseCase.execute(id);
+        await this.deleteAssetUseCase.execute(id);
     }
 }   

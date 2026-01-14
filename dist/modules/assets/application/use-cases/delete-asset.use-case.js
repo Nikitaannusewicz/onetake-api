@@ -25,23 +25,15 @@ let DeleteAssetUseCase = class DeleteAssetUseCase {
         const asset = await this.assetRepository.findById(id);
         if (!asset) {
             throw new common_1.NotFoundException('Asset not found');
+            return;
         }
-        else if (asset) {
-            try {
-                await this.fileStorageService.delete(asset.filePath);
-                if (asset.transcodedFilePath && asset.transcodedFilePath !== asset.filePath) {
-                    await this.fileStorageService.delete(asset.transcodedFilePath);
-                }
-            }
-            catch (error) {
-                throw new common_1.InternalServerErrorException(`Failed to delete asset: ${error}`);
-            }
-            console.log(`Asset deleted: ${asset.id}`);
-        }
+        await this.fileStorageService.delete(asset.filePath);
+        console.log(`Asset deleted: ${asset.id}`);
     }
 };
 exports.DeleteAssetUseCase = DeleteAssetUseCase;
 exports.DeleteAssetUseCase = DeleteAssetUseCase = __decorate([
+    (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)('IAssetRepository')),
     __param(1, (0, common_1.Inject)('IFileStorageService')),
     __metadata("design:paramtypes", [Object, Object])

@@ -22,6 +22,7 @@ const asset_dto_2 = require("../../application/dto/asset.dto");
 const list_assets_use_case_1 = require("../../application/use-cases/list-assets.use-case");
 const get_asset_by_id_use_case_1 = require("../../application/use-cases/get-asset-by-id.use-case");
 const delete_asset_use_case_1 = require("../../application/use-cases/delete-asset.use-case");
+const common_3 = require("@nestjs/common");
 let AssetsController = class AssetsController {
     uploadAssetUseCase;
     deleteAssetUseCase;
@@ -71,7 +72,7 @@ let AssetsController = class AssetsController {
         };
     }
     async deleteAsset(id) {
-        this.deleteAssetUseCase.execute(id);
+        await this.deleteAssetUseCase.execute(id);
     }
 };
 exports.AssetsController = AssetsController;
@@ -84,7 +85,7 @@ __decorate([
 ], AssetsController.prototype, "list", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Query)('id')),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
@@ -105,7 +106,8 @@ __decorate([
 ], AssetsController.prototype, "upload", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Query)()),
+    (0, common_1.HttpCode)(common_3.HttpStatus.NO_CONTENT),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
