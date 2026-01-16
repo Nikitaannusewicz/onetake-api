@@ -1,11 +1,12 @@
 import { Kysely, SqliteDialect } from "kysely";
 import SQLite from 'better-sqlite3';
-import { Database } from "better-sqlite3";
+import { Database as SchemaDatabase } from "better-sqlite3";
 import * as path from 'path';
 
-export function createDatabase(): Kysely<Database> {
-    const dbPath = path.join(__dirname, 'migrations/onetake.db');
-    
+export function createDatabase(): Kysely<SchemaDatabase> {
+    // Use project root to ensure same DB file is used in dev and production
+    const dbPath = path.join(process.cwd(), 'data', 'onetake.db');
+
     const sqlite = new SQLite(dbPath);
     
     const dialect = new SqliteDialect({
@@ -15,7 +16,7 @@ export function createDatabase(): Kysely<Database> {
     sqlite.pragma('foreign_keys = ON');
     sqlite.pragma('journal_mode = WAL');
     
-    return new Kysely<Database>({
+    return new Kysely<SchemaDatabase>({
         dialect,
     })
 }

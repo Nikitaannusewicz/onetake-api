@@ -7,6 +7,7 @@ async function migrate() {
     try {
         console.log('Running migrations...');
         await createAssetsTable(db);
+        console.log('Migration run successfully!');
     } catch(error) {
         console.error(`Migration failed`, error);
         throw error;

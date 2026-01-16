@@ -1,1 +1,4 @@
+node_modulesdata/
+*.log
+docker-compose.override.yml
 node_modules
