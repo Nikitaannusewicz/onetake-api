@@ -16,7 +16,35 @@ services:
       - NODE_ENV=development
       - PORT=3000
       - DOCKER=true
+      - MINIO_ENDPOINT=minio
+      - MINIO_USE_SSL=false
+      - MINIO_ACCESS_KEY=onetake
+      - MINIO_SECRET_KEY=onetake123
+      - MINIO_BUCKER_UPLOADS=onetake-uploads
+      - MINIO_BUCKER_TRANSCODED=onetake-transcoded
     command: npm run start:dev
     restart: unless-stopped
+    depends_on:
+      - minio
+  minio:
+    image: minio/minio:latest
+    container_name: onetake-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: onetake
+      MINIO_ROOT_PASSWORD: onetake123
+    command: server /data --console-address :9001
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+    
 volumes:
   onetake-data:
+  minio-data:

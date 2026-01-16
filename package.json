@@ -18,7 +18,13 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "docker:build": "./scripts/docker-build.sh",
+    "docker:rollback": "./scripts/docker-rollback.sh",
+    "docker:cleanup": "./scripts/docker-cleanup.sh",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -29,6 +35,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "kysely": "^0.28.9",
+    "minio": "^8.0.6",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "uuid": "^13.0.0"
@@ -42,6 +49,7 @@
     "@types/better-sqlite3": "^7.6.13",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
+    "@types/minio": "^7.1.0",
     "@types/multer": "^2.0.0",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",

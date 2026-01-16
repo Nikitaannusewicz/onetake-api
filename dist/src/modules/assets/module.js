@@ -13,13 +13,14 @@ const upload_asset_use_case_1 = require("./application/use-cases/upload-asset.us
 const process_asset_use_case_1 = require("./application/use-cases/process-asset.use-case");
 const asset_uploaded_listener_1 = require("./application/listeners/asset-uploaded.listener");
 const mock_audio_processing_service_1 = require("./infrastructure/processing/mock-audio-processing.service");
-const mock_file_storage_service_1 = require("./infrastructure/storage/mock-file-storage.service");
 const assets_controller_1 = require("./presentation/controllers/assets.controller");
 const list_assets_use_case_1 = require("./application/use-cases/list-assets.use-case");
 const get_asset_by_id_use_case_1 = require("./application/use-cases/get-asset-by-id.use-case");
 const delete_asset_use_case_1 = require("./application/use-cases/delete-asset.use-case");
 const database_1 = require("./infrastructure/database/database");
 const kysely_asset_repository_1 = require("./infrastructure/repositories/kysely-asset.repository");
+const minio_config_1 = require("./infrastructure/storage/minio.config");
+const s3_file_storage_service_1 = require("./infrastructure/storage/s3-file-storage.service");
 let AssetsModule = class AssetsModule {
 };
 exports.AssetsModule = AssetsModule;
@@ -43,13 +44,14 @@ exports.AssetsModule = AssetsModule = __decorate([
                 provide: 'IAssetRepository',
                 useClass: kysely_asset_repository_1.KyselyAssetRepository,
             },
+            minio_config_1.MinioConfig,
+            {
+                provide: 'IFileStorageService',
+                useClass: s3_file_storage_service_1.S3FileStorageService,
+            },
             {
                 provide: 'IAudioProcessingInterface',
                 useClass: mock_audio_processing_service_1.MockAudioProcessingService,
-            },
-            {
-                provide: 'IFileStorageService',
-                useClass: mock_file_storage_service_1.MockFileStorageService,
             },
         ],
         exports: ['DATABASE'],
