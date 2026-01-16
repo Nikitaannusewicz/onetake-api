@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 
 GIT_COMMIT=$(git rev-parse --short HEAD)
@@ -9,16 +10,16 @@ echo "🐳 Building Docker Image"
 echo "===================================="
 echo "Git Commit: ${GIT_COMMIT}"
 echo "Git Branch: ${GIT_BRANCH}"
-echo "Timestamp: ${TIMPESTAMP}"
+echo "Timestamp: ${TIMESTAMP}"
 echo "===================================="
 
 docker-compose build
 
 echo ""
 echo "Tagging image..."
-docker tag onetake-api:latest onetake-api-api:${GIT_COMMIT}
-docker tag onetake-api:latest onetake-api-api:${GIT_BRANCH}
-docker tag onetake-api:latest onetake-api-api:$backup-${TIMESTAMP}
+docker tag onetake-api-api:latest onetake-api-api:${GIT_COMMIT}
+docker tag onetake-api-api:latest onetake-api-api:${GIT_BRANCH}-latest
+docker tag onetake-api-api:latest onetake-api-api:backup-${TIMESTAMP}
 
 echo ""
 echo "✅ Build complete"
