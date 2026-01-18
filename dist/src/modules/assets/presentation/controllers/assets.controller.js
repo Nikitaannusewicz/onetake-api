@@ -23,16 +23,19 @@ const list_assets_use_case_1 = require("../../application/use-cases/list-assets.
 const get_asset_by_id_use_case_1 = require("../../application/use-cases/get-asset-by-id.use-case");
 const delete_asset_use_case_1 = require("../../application/use-cases/delete-asset.use-case");
 const common_3 = require("@nestjs/common");
+const stream_asset_use_case_1 = require("../../application/use-cases/stream-asset.use-case");
 let AssetsController = class AssetsController {
     uploadAssetUseCase;
     deleteAssetUseCase;
     listAssetUseCase;
     getAssetByIdUseCase;
-    constructor(uploadAssetUseCase, deleteAssetUseCase, listAssetUseCase, getAssetByIdUseCase) {
+    streamAssetUseCase;
+    constructor(uploadAssetUseCase, deleteAssetUseCase, listAssetUseCase, getAssetByIdUseCase, streamAssetUseCase) {
         this.uploadAssetUseCase = uploadAssetUseCase;
         this.deleteAssetUseCase = deleteAssetUseCase;
         this.listAssetUseCase = listAssetUseCase;
         this.getAssetByIdUseCase = getAssetByIdUseCase;
+        this.streamAssetUseCase = streamAssetUseCase;
     }
     async list(query) {
         const result = await this.listAssetUseCase.execute(query);
@@ -41,6 +44,16 @@ let AssetsController = class AssetsController {
             data: dtoData,
             meta: result.meta,
         };
+    }
+    async streamAsset(id, response) {
+        const result = await this.streamAssetUseCase.execute(id);
+        const encodedFileName = encodeURIComponent(result.fileName);
+        response.setHeader('Content-Type', result.mimeType);
+        response.setHeader('Content-Length', result.size);
+        response.setHeader('Accept-Ranges', 'bytes');
+        response.setHeader('Cache-Control', 'public, max-age=3600');
+        response.setHeader('Content-Disposition', `inline; filename="${encodedFileName}"`);
+        result.stream.pipe(response);
     }
     async getAsset(id) {
         const result = await this.getAssetByIdUseCase.execute(id);
@@ -84,6 +97,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AssetsController.prototype, "list", null);
 __decorate([
+    (0, common_1.Get)(':id/stream'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], AssetsController.prototype, "streamAsset", null);
+__decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -96,7 +117,7 @@ __decorate([
     __param(0, (0, common_1.UploadedFile)(new common_1.ParseFilePipe({
         validators: [
             new common_1.MaxFileSizeValidator({ maxSize: 50 * 1024 * 1024 }),
-            new common_2.FileTypeValidator({ fileType: /audio\/(mpeg|wav)/ }),
+            new common_2.FileTypeValidator({ fileType: /audio\/(mpeg|wav|mp4)/ }),
         ]
     }))),
     __param(1, (0, common_1.Body)()),
@@ -117,6 +138,7 @@ exports.AssetsController = AssetsController = __decorate([
     __metadata("design:paramtypes", [upload_asset_use_case_1.UploadAssetUseCase,
         delete_asset_use_case_1.DeleteAssetUseCase,
         list_assets_use_case_1.ListAssetsUseCase,
-        get_asset_by_id_use_case_1.GetAssetByIdUseCase])
+        get_asset_by_id_use_case_1.GetAssetByIdUseCase,
+        stream_asset_use_case_1.StreamAssetUseCase])
 ], AssetsController);
 //# sourceMappingURL=assets.controller.js.map

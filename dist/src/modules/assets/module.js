@@ -21,6 +21,7 @@ const database_1 = require("./infrastructure/database/database");
 const kysely_asset_repository_1 = require("./infrastructure/repositories/kysely-asset.repository");
 const minio_config_1 = require("./infrastructure/storage/minio.config");
 const s3_file_storage_service_1 = require("./infrastructure/storage/s3-file-storage.service");
+const stream_asset_use_case_1 = require("./application/use-cases/stream-asset.use-case");
 let AssetsModule = class AssetsModule {
 };
 exports.AssetsModule = AssetsModule;
@@ -35,6 +36,7 @@ exports.AssetsModule = AssetsModule = __decorate([
             get_asset_by_id_use_case_1.GetAssetByIdUseCase,
             upload_asset_use_case_1.UploadAssetUseCase,
             process_asset_use_case_1.ProcessAssetUseCase,
+            stream_asset_use_case_1.StreamAssetUseCase,
             asset_uploaded_listener_1.AssetUploadedListener,
             {
                 provide: 'DATABASE',

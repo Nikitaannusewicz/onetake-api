@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>OneTake Audio Streaming Test</title>
+      <style>
+          body {
+              font-family: Arial, sans-serif;
+              max-width: 800px;
+              margin: 50px auto;
+              padding: 20px;
+              background: #f5f5f5;
+          }
+          .container {
+              background: white;
+              padding: 30px;
+              border-radius: 8px;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+          h1 {
+              color: #333;
+              margin-bottom: 30px;
+          }
+          .player {
+              margin: 20px 0;
+              padding: 20px;
+              background: #f9f9f9;
+              border-radius: 4px;
+          }
+          audio {
+              width: 100%;
+              margin-top: 10px;
+          }
+          .info {
+              margin-top: 20px;
+              padding: 15px;
+              background: #e3f2fd;
+              border-left: 4px solid #2196f3;
+              border-radius: 4px;
+          }
+          .error {
+              background: #ffebee;
+              border-left-color: #f44336;
+          }
+          input {
+              width: 100%;
+              padding: 10px;
+              margin: 10px 0;
+              border: 1px solid #ddd;
+              border-radius: 4px;
+              box-sizing: border-box;
+          }
+          button {
+              background: #2196f3;
+              color: white;
+              padding: 10px 20px;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+              font-size: 16px;
+          }
+          button:hover {
+              background: #1976d2;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="container">
+          <h1>OneTake Audio Streaming Test</h1>
+
+          <div>
+              <label for="assetId">Enter Asset ID:</label>
+              <input 
+                  type="text" 
+                  id="assetId" 
+                  placeholder="e.g., 123e4567-e89b-12d3-a456-426614174000"
+              >
+              <button onclick="loadAudio()">Load Audio</button>
+          </div>
+
+          <div class="player" id="playerContainer" style="display: none;">
+              <h3>Now Playing</h3>
+              <audio id="audioPlayer" controls>
+                  Your browser does not support audio streaming.
+              </audio>
+          </div>
+
+          <div class="info">
+              <strong>Instructions:</strong>
+              <ol>
+                  <li>Upload an audio file via POST /assets</li>
+                  <li>Copy the asset ID from the response</li>
+                  <li>Paste it above and click "Load Audio"</li>
+                  <li>Audio should start playing immediately</li>
+              </ol>
+          </div>
+
+          <div id="message"></div>
+      </div>
+
+      <script>
+          function loadAudio() {
+              const assetId = document.getElementById('assetId').value.trim();
+              const messageDiv = document.getElementById('message');
+              const playerContainer = document.getElementById('playerContainer');
+              const audioPlayer = document.getElementById('audioPlayer');
+
+              if (!assetId) {
+                  showMessage('Please enter an asset ID', true);
+                  return;
+              }
+
+              // Build streaming URL
+              const streamUrl = `http://localhost:3000/assets/${assetId}/stream`;
+
+              console.log('Loading audio from:', streamUrl);
+
+              // Set audio source
+              audioPlayer.src = streamUrl;
+
+              // Show player
+              playerContainer.style.display = 'block';
+
+              // Try to play
+              audioPlayer.load();
+              audioPlayer.play()
+                  .then(() => {
+                      showMessage(`✓ Streaming asset: ${assetId}`, false);
+                  })
+                  .catch(error => {
+                      showMessage(`✗ Failed to play: ${error.message}`, true);
+                  });
+          }
+
+          function showMessage(text, isError) {
+              const messageDiv = document.getElementById('message');
+              messageDiv.className = 'info ' + (isError ? 'error' : '');
+              messageDiv.innerHTML = `<strong>${text}</strong>`;
+              messageDiv.style.display = 'block';
+          }
+
+          // Allow Enter key to load
+          document.getElementById('assetId').addEventListener('keypress', function(e) {
+              if (e.key === 'Enter') {
+                  loadAudio();
+              }
+          });
+      </script>
+  </body>
+  </html>

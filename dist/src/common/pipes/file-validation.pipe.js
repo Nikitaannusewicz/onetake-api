@@ -19,6 +19,7 @@ let FileValidationPipe = class FileValidationPipe {
         this.options.allowedMimeTypes = options.allowedMimeTypes || [
             'audio/mpeg',
             'audio/wav',
+            'audio/mp4',
         ];
     }
     transform(file) {

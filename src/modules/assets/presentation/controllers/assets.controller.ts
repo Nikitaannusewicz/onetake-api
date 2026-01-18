@@ -1,4 +1,5 @@
-import { Post, Query, Body, Param, Delete, Controller, UseInterceptors, MaxFileSizeValidator, ParseFilePipe, UploadedFile, Get, HttpCode} from "@nestjs/common";
+import { Post, Query, Body, Param, Delete, Controller, UseInterceptors, MaxFileSizeValidator, ParseFilePipe, UploadedFile, Get, HttpCode, Res} from "@nestjs/common";
+import type { Response } from "express";
 import { FileTypeValidator } from "@nestjs/common";
 import { UploadAssetUseCase } from "../../application/use-cases/upload-asset.use-case";
 import { AssetDto, ListAssetsDto } from "../../application/dto/asset.dto";
@@ -9,6 +10,7 @@ import { PaginatedResponse } from "src/common/pipes/types/paginated-response.typ
 import { GetAssetByIdUseCase } from "../../application/use-cases/get-asset-by-id.use-case";
 import { DeleteAssetUseCase } from "../../application/use-cases/delete-asset.use-case";
 import { HttpStatus } from "@nestjs/common";
+import { StreamAssetUseCase } from "../../application/use-cases/stream-asset.use-case";
 
 @Controller('assets')
 export class AssetsController {
@@ -17,6 +19,7 @@ export class AssetsController {
         private readonly deleteAssetUseCase: DeleteAssetUseCase,
         private readonly listAssetUseCase: ListAssetsUseCase,
         private readonly getAssetByIdUseCase: GetAssetByIdUseCase,
+        private readonly streamAssetUseCase: StreamAssetUseCase,
     ) {}
     
     @Get()
@@ -30,6 +33,21 @@ export class AssetsController {
             data: dtoData,
             meta: result.meta,
         };        
+    }
+    
+    @Get(':id/stream')
+    async streamAsset(@Param('id') id: string, @Res() response: Response): Promise<void> {
+        const result = await this.streamAssetUseCase.execute(id);
+        
+        const encodedFileName = encodeURIComponent(result.fileName);
+        
+        response.setHeader('Content-Type', result.mimeType);
+        response.setHeader('Content-Length', result.size);
+        response.setHeader('Accept-Ranges', 'bytes');
+        response.setHeader('Cache-Control', 'public, max-age=3600');
+        response.setHeader('Content-Disposition', `inline; filename="${encodedFileName}"`);
+        
+        result.stream.pipe(response);
     }
     
     @Get(':id')
@@ -47,7 +65,7 @@ export class AssetsController {
             new ParseFilePipe({
                 validators: [
                     new MaxFileSizeValidator({ maxSize: 50 * 1024 * 1024}),
-                    new FileTypeValidator({ fileType: /audio\/(mpeg|wav)/ }),
+                    new FileTypeValidator({ fileType: /audio\/(mpeg|wav|mp4)/ }),
                 ]
             }),
         )

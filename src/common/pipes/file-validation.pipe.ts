@@ -12,6 +12,7 @@ export class FileValidationPipe implements PipeTransform {
         this.options.allowedMimeTypes = options.allowedMimeTypes || [
             'audio/mpeg',
             'audio/wav',
+            'audio/mp4',
         ];
     }
     

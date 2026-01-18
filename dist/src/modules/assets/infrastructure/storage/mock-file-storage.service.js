@@ -18,6 +18,10 @@ let MockFileStorageService = class MockFileStorageService {
         console.log(`File has been saved: ${filePath}`);
         return filePath;
     }
+    async getStream(filePath) {
+        const stream = 123;
+        return stream;
+    }
     async getFile(filePath) {
         const file = this.files.get(filePath) || null;
         return file;

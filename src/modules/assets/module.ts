@@ -5,7 +5,6 @@ import { ProcessAssetUseCase } from "./application/use-cases/process-asset.use-c
 import { AssetUploadedListener } from "./application/listeners/asset-uploaded.listener";
 import { InMemoryAssetRepository } from "./infrastructure/repositories/in-memory-asset-repository";
 import { MockAudioProcessingService } from "./infrastructure/processing/mock-audio-processing.service";
-import { MockFileStorageService } from "./infrastructure/storage/mock-file-storage.service";
 import { AssetsController } from "./presentation/controllers/assets.controller";
 import { ListAssetsUseCase } from "./application/use-cases/list-assets.use-case";
 import { GetAssetByIdUseCase } from "./application/use-cases/get-asset-by-id.use-case";
@@ -14,6 +13,7 @@ import { createDatabase } from "./infrastructure/database/database";
 import { KyselyAssetRepository } from "./infrastructure/repositories/kysely-asset.repository";
 import { MinioConfig } from "./infrastructure/storage/minio.config";
 import { S3FileStorageService } from "./infrastructure/storage/s3-file-storage.service";
+import { StreamAssetUseCase } from "./application/use-cases/stream-asset.use-case";
 
 @Global()
 @Module({
@@ -26,6 +26,7 @@ import { S3FileStorageService } from "./infrastructure/storage/s3-file-storage.s
         GetAssetByIdUseCase,
         UploadAssetUseCase,
         ProcessAssetUseCase,
+        StreamAssetUseCase,
 
         // Listeners
         AssetUploadedListener,

@@ -29,15 +29,15 @@ export class S3FileStorageService implements IFileStorageService {
                 file.buffer.length,
                 {
                     'Content-Type': file.mimeType,
-                    'X-Original-Name': file.originalName,
+                    'X-Original-Name': encodeURIComponent(file.originalName),
                 }
             );
 
-            console.log(`Uploaded file to MinIO: ${bucketName}/${fileName}`);
+            console.log(`✅ Uploaded file to MinIO: ${bucketName}/${fileName}`);
             return `${bucketName}/${fileName}`;
         } catch (error) {
             console.error(`MinIO upload failed:`, error);
-            throw new Error(`Failed to upload file to storage: ${error.message}`);
+            throw new Error(`⚠️ Failed to upload file to storage: ${error.message}`);
         }
     }
 
