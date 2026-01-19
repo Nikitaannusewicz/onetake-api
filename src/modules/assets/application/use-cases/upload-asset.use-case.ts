@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Asset } from '../../domain/entity';
 import type { IAssetRepository } from '../interfaces/asset-repository.interface';
 import type { IFileStorageService } from '../interfaces/file-storage.interface';
-import type { IAudioProcessingInterface } from '../interfaces/audio-processing.interface';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { KyselyAssetRepository } from '../../infrastructure/repositories/kysely-asset.repository';
 import { AssetUploadedEvent } from '../events/asset-uploaded.event';
@@ -25,8 +24,6 @@ export class UploadAssetUseCase {
         private readonly assetRepository: IAssetRepository,
         @Inject('IFileStorageService')
         private readonly fileStorageService: IFileStorageService,
-        @Inject('IAudioProcessingInterface')
-        private readonly audioProcessingService: IAudioProcessingInterface,
         private readonly eventEmitter: EventEmitter2,
     ) {}
 
@@ -48,18 +45,8 @@ export class UploadAssetUseCase {
             asset.markAsFailed();
             throw new Error(`Internal server error: ${error.message}`);
         }
-        
-        let fileDuration: number;
-        try {
-            fileDuration = await this.audioProcessingService.getDuration(filePath);
-        } catch (error) {
-            await this.fileStorageService.delete(filePath);
-            asset.markAsFailed();
-            throw new Error(`Failed to analyze audio: ${error.message}`);
-        }
 
         asset.filePath = filePath;
-        asset.duration = fileDuration;
         
         asset.markAsProcessing()
         await this.assetRepository.save(asset);

@@ -42,9 +42,12 @@ class Asset {
         const now = new Date();
         return new Asset((0, uuid_1.v4)(), originalFileName, mimeType, size, duration, filePath, ownerId, now, now, AssetStatus.UPLOADED);
     }
+    static reconstitute(id, originalFileName, mimeType, size, duration, filePath, ownerId, createdAt, updatedAt, status, transcodedFilePath, bpm, key) {
+        return new Asset(id, originalFileName, mimeType, size, duration, filePath, ownerId, createdAt, updatedAt, status, transcodedFilePath, bpm, key);
+    }
     markAsProcessing() {
-        if (this.status !== AssetStatus.UPLOADED) {
-            throw new Error('Asset must be in UPLOADED status to start processing.');
+        if (this.status === AssetStatus.READY) {
+            throw new Error('Asset cannot be marked as READY.');
         }
         this.status = AssetStatus.PROCESSING;
         this.updatedAt = new Date();

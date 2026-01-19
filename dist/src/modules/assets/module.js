@@ -12,7 +12,6 @@ const event_emitter_1 = require("@nestjs/event-emitter");
 const upload_asset_use_case_1 = require("./application/use-cases/upload-asset.use-case");
 const process_asset_use_case_1 = require("./application/use-cases/process-asset.use-case");
 const asset_uploaded_listener_1 = require("./application/listeners/asset-uploaded.listener");
-const mock_audio_processing_service_1 = require("./infrastructure/processing/mock-audio-processing.service");
 const assets_controller_1 = require("./presentation/controllers/assets.controller");
 const list_assets_use_case_1 = require("./application/use-cases/list-assets.use-case");
 const get_asset_by_id_use_case_1 = require("./application/use-cases/get-asset-by-id.use-case");
@@ -22,6 +21,7 @@ const kysely_asset_repository_1 = require("./infrastructure/repositories/kysely-
 const minio_config_1 = require("./infrastructure/storage/minio.config");
 const s3_file_storage_service_1 = require("./infrastructure/storage/s3-file-storage.service");
 const stream_asset_use_case_1 = require("./application/use-cases/stream-asset.use-case");
+const ffmpeg_audio_processor_service_1 = require("./infrastructure/processing/ffmpeg-audio-processor.service");
 let AssetsModule = class AssetsModule {
 };
 exports.AssetsModule = AssetsModule;
@@ -52,8 +52,8 @@ exports.AssetsModule = AssetsModule = __decorate([
                 useClass: s3_file_storage_service_1.S3FileStorageService,
             },
             {
-                provide: 'IAudioProcessingInterface',
-                useClass: mock_audio_processing_service_1.MockAudioProcessingService,
+                provide: 'IAudioProcessingService',
+                useClass: ffmpeg_audio_processor_service_1.FfmpegAudioProcessingService,
             },
         ],
         exports: ['DATABASE'],

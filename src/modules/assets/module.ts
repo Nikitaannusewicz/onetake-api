@@ -3,8 +3,6 @@ import { EventEmitterModule } from "@nestjs/event-emitter";
 import { UploadAssetUseCase } from "./application/use-cases/upload-asset.use-case";
 import { ProcessAssetUseCase } from "./application/use-cases/process-asset.use-case";
 import { AssetUploadedListener } from "./application/listeners/asset-uploaded.listener";
-import { InMemoryAssetRepository } from "./infrastructure/repositories/in-memory-asset-repository";
-import { MockAudioProcessingService } from "./infrastructure/processing/mock-audio-processing.service";
 import { AssetsController } from "./presentation/controllers/assets.controller";
 import { ListAssetsUseCase } from "./application/use-cases/list-assets.use-case";
 import { GetAssetByIdUseCase } from "./application/use-cases/get-asset-by-id.use-case";
@@ -14,6 +12,7 @@ import { KyselyAssetRepository } from "./infrastructure/repositories/kysely-asse
 import { MinioConfig } from "./infrastructure/storage/minio.config";
 import { S3FileStorageService } from "./infrastructure/storage/s3-file-storage.service";
 import { StreamAssetUseCase } from "./application/use-cases/stream-asset.use-case";
+import { FfmpegAudioProcessingService } from "./infrastructure/processing/ffmpeg-audio-processor.service";
 
 @Global()
 @Module({
@@ -52,8 +51,8 @@ import { StreamAssetUseCase } from "./application/use-cases/stream-asset.use-cas
         
         // Audio Processing (mock)
         {
-            provide: 'IAudioProcessingInterface',
-            useClass: MockAudioProcessingService,
+            provide: 'IAudioProcessingService',
+            useClass: FfmpegAudioProcessingService,
         },
     ],
   exports: ['DATABASE'],

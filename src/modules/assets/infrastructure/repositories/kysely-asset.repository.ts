@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Kysely, sql } from "kysely";
-import { Asset } from "../../domain/entity";
+import { Asset, AssetStatus } from "../../domain/entity";
 import { AssetFilterOptions, IAssetRepository } from "../../application/interfaces/asset-repository.interface";
 import { Database, AssetsTable } from "../database/schema";
 
@@ -55,46 +55,41 @@ export class KyselyAssetRepository implements IAssetRepository {
             return null;
         }
         
-        const asset = {
-            id: row.id,
-            originalFileName: row.original_file_name,
-            mimeType: row.mime_type,
-            size: row.size,
-            duration: row.duration,
-            filePath: row.file_path,
-            transcodedFilePath: row.transcoded_file_path,
-            ownerId: row.owner_id,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at,
-            status: row.status,
-            bpm: row.bpm,
-            key: row.key,
-        } as Asset;
-         
-        return asset;
+        return Asset.reconstitute(
+            row.id,
+            row.original_file_name,
+            row.mime_type,
+            row.size,
+            row.duration,
+            row.file_path,
+            row.owner_id,
+            row.created_at,
+            row.updated_at,
+            row.status as AssetStatus,
+            row.transcoded_file_path ?? undefined,
+            row.bpm ?? undefined,
+            row.key ?? undefined,
+        )
     }
     
     async findByOwnerId(ownerId: string): Promise<Asset[]> {
         const rows = await this.db.selectFrom('assets').selectAll().where('owner_id', '=', ownerId).execute();
         
-        const assets = rows.map((row) => ({
-            id: row.id,
-            originalFileName: row.original_file_name,
-            mimeType: row.mime_type,
-            size: row.size,
-            duration: row.duration,
-            filePath: row.file_path,
-            transcodedFilePath: row.transcoded_file_path,
-            ownerId: row.owner_id,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at,
-            status: row.status,
-            bpm: row.bpm,
-            key: row.key,
-            }) as Asset
-        )
-        
-        return assets;
+        return rows.map((row) => Asset.reconstitute(
+            row.id,
+            row.original_file_name,
+            row.mime_type,
+            row.size,
+            row.duration,
+            row.file_path,
+            row.owner_id,
+            row.created_at,
+            row.updated_at,
+            row.status as AssetStatus,
+            row.transcoded_file_path ?? undefined,
+            row.bpm ?? undefined,
+            row.key ?? undefined,
+        ));
     }
     
     async findAll(filters?: AssetFilterOptions): Promise<Asset[]> {
@@ -122,24 +117,21 @@ export class KyselyAssetRepository implements IAssetRepository {
 
         const rows = await query.execute();
 
-        const assets = rows.map(row => ({
-            id: row.id,
-            originalFileName: row.original_file_name,
-            mimeType: row.mime_type,
-            size: row.size,
-            duration: row.duration,
-            filePath: row.file_path,
-            transcodedFilePath: row.transcoded_file_path,
-            ownerId: row.owner_id,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at,
-            status: row.status,
-            bpm: row.bpm,
-            key: row.key,
-            }) as Asset
-        )
-
-        return assets;
+        return rows.map(row => Asset.reconstitute(
+            row.id,
+            row.original_file_name,
+            row.mime_type,
+            row.size,
+            row.duration,
+            row.file_path,
+            row.owner_id,
+            row.created_at,
+            row.updated_at,
+            row.status as AssetStatus,
+            row.transcoded_file_path ?? undefined,
+            row.bpm ?? undefined,
+            row.key ?? undefined,
+        ));
     }
     
     async delete(id: string): Promise<boolean> {

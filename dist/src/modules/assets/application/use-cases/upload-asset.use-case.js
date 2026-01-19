@@ -21,12 +21,10 @@ const common_2 = require("@nestjs/common");
 let UploadAssetUseCase = class UploadAssetUseCase {
     assetRepository;
     fileStorageService;
-    audioProcessingService;
     eventEmitter;
-    constructor(assetRepository, fileStorageService, audioProcessingService, eventEmitter) {
+    constructor(assetRepository, fileStorageService, eventEmitter) {
         this.assetRepository = assetRepository;
         this.fileStorageService = fileStorageService;
-        this.audioProcessingService = audioProcessingService;
         this.eventEmitter = eventEmitter;
     }
     async execute(command) {
@@ -39,17 +37,7 @@ let UploadAssetUseCase = class UploadAssetUseCase {
             asset.markAsFailed();
             throw new Error(`Internal server error: ${error.message}`);
         }
-        let fileDuration;
-        try {
-            fileDuration = await this.audioProcessingService.getDuration(filePath);
-        }
-        catch (error) {
-            await this.fileStorageService.delete(filePath);
-            asset.markAsFailed();
-            throw new Error(`Failed to analyze audio: ${error.message}`);
-        }
         asset.filePath = filePath;
-        asset.duration = fileDuration;
         asset.markAsProcessing();
         await this.assetRepository.save(asset);
         this.eventEmitter.emit('asset.uploaded', new asset_uploaded_event_1.AssetUploadedEvent(asset.id, asset.filePath, asset.ownerId));
@@ -61,7 +49,6 @@ exports.UploadAssetUseCase = UploadAssetUseCase = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_2.Inject)('IAssetRepository')),
     __param(1, (0, common_2.Inject)('IFileStorageService')),
-    __param(2, (0, common_2.Inject)('IAudioProcessingInterface')),
-    __metadata("design:paramtypes", [Object, Object, Object, event_emitter_1.EventEmitter2])
+    __metadata("design:paramtypes", [Object, Object, event_emitter_1.EventEmitter2])
 ], UploadAssetUseCase);
 //# sourceMappingURL=upload-asset.use-case.js.map

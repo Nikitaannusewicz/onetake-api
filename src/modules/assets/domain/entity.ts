@@ -75,9 +75,41 @@ export class Asset {
         )
     }
     
+    static reconstitute(
+    id: string,
+    originalFileName: string,
+    mimeType: string,
+    size: number,
+    duration: number,
+    filePath: string,
+    ownerId: string,
+    createdAt: Date,
+    updatedAt: Date,
+    status: AssetStatus,
+    transcodedFilePath?: string,
+    bpm?: number,
+    key?: string,
+    ): Asset {
+        return new Asset(
+            id,
+            originalFileName,
+            mimeType,
+            size,
+            duration,
+            filePath,
+            ownerId,
+            createdAt,
+            updatedAt,
+            status ,
+            transcodedFilePath,
+            bpm,
+            key,
+        );
+    }
+    
     markAsProcessing(): void {
-        if (this.status !== AssetStatus.UPLOADED) {
-            throw new Error('Asset must be in UPLOADED status to start processing.');
+        if (this.status === AssetStatus.READY) {
+            throw new Error('Asset cannot be marked as READY.');
         }
         this.status = AssetStatus.PROCESSING;
         this.updatedAt = new Date();

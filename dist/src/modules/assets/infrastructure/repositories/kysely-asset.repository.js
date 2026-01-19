@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KyselyAssetRepository = void 0;
 const common_1 = require("@nestjs/common");
 const kysely_1 = require("kysely");
+const entity_1 = require("../../domain/entity");
 let KyselyAssetRepository = class KyselyAssetRepository {
     db;
     constructor(db) {
@@ -58,41 +59,11 @@ let KyselyAssetRepository = class KyselyAssetRepository {
         if (!row) {
             return null;
         }
-        const asset = {
-            id: row.id,
-            originalFileName: row.original_file_name,
-            mimeType: row.mime_type,
-            size: row.size,
-            duration: row.duration,
-            filePath: row.file_path,
-            transcodedFilePath: row.transcoded_file_path,
-            ownerId: row.owner_id,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at,
-            status: row.status,
-            bpm: row.bpm,
-            key: row.key,
-        };
-        return asset;
+        return entity_1.Asset.reconstitute(row.id, row.original_file_name, row.mime_type, row.size, row.duration, row.file_path, row.owner_id, row.created_at, row.updated_at, row.status, row.transcoded_file_path ?? undefined, row.bpm ?? undefined, row.key ?? undefined);
     }
     async findByOwnerId(ownerId) {
         const rows = await this.db.selectFrom('assets').selectAll().where('owner_id', '=', ownerId).execute();
-        const assets = rows.map((row) => ({
-            id: row.id,
-            originalFileName: row.original_file_name,
-            mimeType: row.mime_type,
-            size: row.size,
-            duration: row.duration,
-            filePath: row.file_path,
-            transcodedFilePath: row.transcoded_file_path,
-            ownerId: row.owner_id,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at,
-            status: row.status,
-            bpm: row.bpm,
-            key: row.key,
-        }));
-        return assets;
+        return rows.map((row) => entity_1.Asset.reconstitute(row.id, row.original_file_name, row.mime_type, row.size, row.duration, row.file_path, row.owner_id, row.created_at, row.updated_at, row.status, row.transcoded_file_path ?? undefined, row.bpm ?? undefined, row.key ?? undefined));
     }
     async findAll(filters) {
         let query = this.db.selectFrom('assets').selectAll();
@@ -112,22 +83,7 @@ let KyselyAssetRepository = class KyselyAssetRepository {
             query = query.where('key', '=', filters.key);
         }
         const rows = await query.execute();
-        const assets = rows.map(row => ({
-            id: row.id,
-            originalFileName: row.original_file_name,
-            mimeType: row.mime_type,
-            size: row.size,
-            duration: row.duration,
-            filePath: row.file_path,
-            transcodedFilePath: row.transcoded_file_path,
-            ownerId: row.owner_id,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at,
-            status: row.status,
-            bpm: row.bpm,
-            key: row.key,
-        }));
-        return assets;
+        return rows.map(row => entity_1.Asset.reconstitute(row.id, row.original_file_name, row.mime_type, row.size, row.duration, row.file_path, row.owner_id, row.created_at, row.updated_at, row.status, row.transcoded_file_path ?? undefined, row.bpm ?? undefined, row.key ?? undefined));
     }
     async delete(id) {
         const result = await this.db
