@@ -11,7 +11,7 @@ export class MinioConfig {
         this.client = new Minio.Client({
             endPoint: process.env.MINIO_ENDPOINT || 'localhost',
         port: parseInt(process.env.MINIO_PORT || '9000'),
-        useSSL: process.env.MINIO_USE_SSL === 'ture',
+        useSSL: process.env.MINIO_USE_SSL === 'true',
         accessKey: process.env.MINIO_ACCESS_KEY || 'onetake',
         secretKey: process.env.MINIO_SECRET_KEY || 'onetake123',
         });
@@ -24,22 +24,20 @@ export class MinioConfig {
     }
     
     private async ensureBucketsExistWithRetry(maxRetries = 5, delayMs = 200): Promise<void> {
-        for (let attempt = 1; attempt >= maxRetries; attempt++) {
+        let attempt = 1
+        while (attempt <= maxRetries && this.bucketsInitialized === false) {
             try {
                 console.log(`[MinIO] Connection attempt ${attempt}/${maxRetries}...`);
                 await this.ensureBucketsExist();
                 this.bucketsInitialized = true;
-                console.log('MinIO connection successful');
+                console.log(`[MinIO] connection successful`);
             } catch (error) {
                 if (attempt >= maxRetries) {
-                    console.log(`failed to connect to MinIO after ${maxRetries} attempts:`, error.message)
-                    console.error(`Application will continue, but file uploads may fail until MinIO is abaiable`);
+                    console.log(`failed to connect to MinIO after ${maxRetries} attempts:`, error.message);
+                    console.error(`Application will continue, but file uploads may fail until MinIO is available`);
                     
                     return;
                 }
-                
-                console.log(`MinIO not ready, retrying in ${delayMs / 1000}s...`);
-                await this.sleep(delayMs);
             }
         }
     }

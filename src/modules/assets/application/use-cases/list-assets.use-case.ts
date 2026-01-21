@@ -21,7 +21,7 @@ export class ListAssetsUseCase {
 
         const allFilteredAssets = await this.assetRepository.findAll(filters);
         
-        const skip = query.limit ? query.limit * 10 : 0;
+        const skip = ((query.page || 1) - 1) * (query.limit || 10);
         const take = query.limit || 10;
         
         const paginatedAssets = allFilteredAssets.slice(skip, skip + take);
